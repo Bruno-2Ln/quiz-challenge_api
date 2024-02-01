@@ -21,8 +21,11 @@
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
-Route.get('/thematics', 'ThematicsController.index')
-Route.get('/categories', 'CategoriesController.index')
+Route.get('/admin/thematics', 'ThematicsController.index')
+Route.get('/admin/categories', 'CategoriesController.index')
+
+Route.get('/admin/questions', 'QuestionsController.index')
+Route.patch('/admin/questions/:id', 'QuestionsController.archive')
 
 Route.get('health', async ({ response }) => {
   const report = await HealthCheck.getReport()
