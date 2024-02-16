@@ -20,14 +20,37 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
+import Env from '@ioc:Adonis/Core/Env'
 
-Route.get('/admin/thematics', 'ThematicsController.index')
-Route.get('/admin/categories', 'CategoriesController.index')
+Route.group(() => {
+  Route.get('/thematics', 'ThematicsController.index')
+  Route.get('/categories', 'CategoriesController.index')
+  Route.get('/questions', 'QuestionsController.index')
+  Route.patch('/questions/:id', 'QuestionsController.archive')
+})
+  .prefix('/admin')
+  .middleware('auth')
 
-Route.get('/admin/questions', 'QuestionsController.index')
-Route.patch('/admin/questions/:id', 'QuestionsController.archive')
+Route.post('/register', 'AuthController.register')
+Route.post('/login', 'AuthController.login')
+Route.get('/logout', 'AuthController.logout').middleware('auth')
+Route.get('/archive', 'AuthController.archive').middleware('auth')
 
 Route.get('health', async ({ response }) => {
   const report = await HealthCheck.getReport()
   return report.healthy ? response.ok(report) : response.badRequest(report)
+})
+
+Route.get('/', async ({ response }) => {
+  const appInfo = {
+    name: Env.get('APP_NAME', 'quiz-challenge'),
+    version: Env.get('APP_VERSION', '1.0.0'),
+    environment: Env.get('NODE_ENV', 'development'),
+    author: Env.get('APP_AUTHOR', 'Happy Monkey'),
+    contact: Env.get('APP_CONTACT', 'contact@happy-monkey.fr'),
+  }
+
+  return response.json({
+    appInfo,
+  })
 })
